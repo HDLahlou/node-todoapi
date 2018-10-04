@@ -66,7 +66,7 @@ app.delete('/todos/:id', (req, res) =>
   var id = req.params.id;
   //validate id send 404
   if(!ObjectID.isValid(id)){
-    return res.statsu(404).send();
+    return res.status(404).send();
   }
   //remove todo by id
   Todo.findByIdAndRemove(id).then((todo) => {
