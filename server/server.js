@@ -11,6 +11,7 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
+//Creates post/ document
 app.post('/todos', (req , res) => {
   var todo = new Todo({
     text: req.body.text
@@ -24,6 +25,7 @@ app.post('/todos', (req , res) => {
 });
 });
 
+//Gets all data
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) =>{
     res.send({
@@ -56,6 +58,36 @@ app.get('/todos/:id', (req,res) => {
   // error,
   //400 - send nothing
 });
+
+//Deletes entry
+app.delete('/todos/:id', (req, res) =>
+{
+  //get the id
+  var id = req.params.id;
+  //validate id send 404
+  if(!ObjectID.isValid(id)){
+    return res.statsu(404).send();
+  }
+  //remove todo by id
+  Todo.findByIdAndRemove(id).then((todo) => {
+    if(!todo){
+      return res.status(404).send();
+    }
+
+    res.send({todo});
+  }).catch((e) => {
+    res.status(400).send();
+  })
+    //success
+      //if no doc send 404
+      //else send doc and 200
+    //error
+    //400 with empty body
+
+});
+
+
+//Intializes the entire server
 app.listen(port, () => {
   console.log(`Started on port ${port}`);
 });
