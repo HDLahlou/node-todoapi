@@ -1,5 +1,6 @@
 require('./config/config')
 
+
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,6 +9,8 @@ const {ObjectID} = require('mongodb');
 const {mongoose} = require('./db/mongoose');
 const {Todo} = require('./models/todo');
 const {User} = require('./models/user');
+var {authenticate} = require('./middleware/authenticate.js')
+
 
 const app = express();
 const port = process.env.PORT;
@@ -46,6 +49,11 @@ app.post('/users', (req,res) => {
 });
 
 
+
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user);
+});
+
 //Gets all data
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) =>{
@@ -56,6 +64,19 @@ app.get('/todos', (req, res) => {
     res.status(400).send(e);
   });
 });
+
+// POST /users/login {email, password}
+app.post('/users/login', (req, res) =>{
+  var body = _.pick(req.body, ['email', 'password']);
+
+  User.findByCredentials(body.email, body.password).then((user) => {
+    return user.generateAuthToken().then((token) =>{
+      res.header('x-auth', token).send(user);
+    });
+  }).catch((e) =>{
+    res.status(400).send();
+  })
+})
 
 //GET /todos/1234324 be able to fetch that id
 app.get('/todos/:id', (req,res) => {
