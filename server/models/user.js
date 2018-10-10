@@ -104,6 +104,17 @@ UserSchema.statics.findByCredentials = function (email, password) {
   })
 };
 
+UserSchema.methods.removeToken = function(token) {
+  //lets you remove items from an array :$pull
+
+  var user= this;
+
+  return user.update({
+    $pull:{
+      tokens:{token}
+    }
+  })
+}
 
 //not using arrow function gives access to this variable
 UserSchema.pre('save', function(next) {
