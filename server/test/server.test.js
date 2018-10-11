@@ -185,6 +185,7 @@ describe('Patch /todos/:id', ()=>{
      .expect((res) => {
       expect(res.body.todo.completed).toBe(true);
       expect(res.body.todo.text).toBe(text);
+      expect(typeof res.body.todo.completedAt).toBe('number')
       //expect(res.body.todo.completedAt).toBeOfType('number');
     })
     .end(done)
